@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  annotations:
+    {}
+  labels:
+    {}
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.deployment-default-postgres
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: apps.deployment-default-postgres
+    spec:
+      containers:
+        - imagePullPolicy: Always
+          name: container-0
+          _active: true
+          volumeMounts:
+            - name: vol0
+              mountPath: /data/pg
+          image: postgres
+          ports:
+            - name: postgres
+              expose: true
+              protocol: TCP
+              containerPort: 5432
+              _serviceType: NodePort
+              _listeningPort: 30624
+          envFrom:
+            - prefix: ''
+              configMapRef:
+                name: postgres-config
+                optional: false
+      affinity:
+      imagePullSecrets:
+      initContainers:
+      restartPolicy: Always
+      volumes:
+        - _type: persistentVolumeClaim
+          persistentVolumeClaim:
+            claimName: postgres-disk
+          name: vol0
+  replicas: 1

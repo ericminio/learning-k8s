@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+
+    rancher:
+        image: rancher/rancher:latest
+        container_name: rancher
+        ports:
+            - 80:80
+            - 443:443
+            - 30624:30624
+        privileged: true
+        restart: unless-stopped
+        volumes: 
+            - ./k8s:/tmp
+
+    psql:
+        build: psql
+        image: ubuntu:psql
+        container_name: psql
+        volumes:
+            - ./psql:/tmp
+
